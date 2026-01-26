@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulador Hospitalar</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div id="hospital">
+
+    <header id="topo">
+      <h1>Simulador Hospitalar</h1>
+      <button id="btn-novo-paciente">➕ Novo Paciente</button>
+    </header>
+
+    <main id="planta-hospital">
+
+      <section class="setor" id="recepcao">
+        <h2>Recepção</h2>
+        <div class="lista-pacientes"></div>
+      </section>
+
+      <section class="setor" id="triagem">
+        <h2>Triagem</h2>
+        <div class="lista-pacientes"></div>
+      </section>
+
+      <section class="setor" id="espera">
+        <h2>Fila de Espera</h2>
+        <div class="lista-pacientes"></div>
+      </section>
+
+      <section class="setor" id="atendimento">
+        <h2>Atendimento</h2>
+
+        <div class="medico" id="medico-1">
+          <h3>Médico 1</h3>
+          <div class="paciente"></div>
+        </div>
+
+        <div class="medico" id="medico-2">
+          <h3>Médico 2</h3>
+          <div class="paciente"></div>
+        </div>
+      </section>
+
+      <section class="setor" id="alertas">
+        <h2>Alertas</h2>
+        <ul id="alertas-lista"></ul>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="js/state.js"></script>
+  <script src="js/hospital.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>

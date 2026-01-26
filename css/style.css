@@ -1,0 +1,163 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+}
+
+#hospital {
+  padding: 20px;
+}
+
+#topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#btn-novo-paciente {
+  padding: 8px 14px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #2563eb;
+  color: #fff;
+}
+
+#btn-novo-paciente:hover {
+  background: #1e4fd8;
+}
+
+#planta-hospital {
+  display: grid;
+  grid-template-areas:
+    "recepcao triagem"
+    "espera atendimento"
+    "alertas alertas";
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+#recepcao { grid-area: recepcao; }
+#triagem { grid-area: triagem; }
+#espera { grid-area: espera; }
+#atendimento { grid-area: atendimento; }
+#alertas { grid-area: alertas; }
+
+.setor {
+  background: #ffffff;
+  border: 2px solid #d0d7de;
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 160px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.setor h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #374151;
+}
+
+
+.lista-pacientes {
+  flex: 1;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 6px;
+  overflow-y: auto;
+}
+
+
+.paciente {
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #e5e7eb;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+
+  /* GRAVIDADE */
+
+.paciente.vermelho {
+  background: #fecaca;
+}
+
+.paciente.amarelo {
+  background: #fef3c7;
+}
+
+.paciente.verde {
+  background: #bbf7d0;
+}
+
+/* ANIMAÇÕES DE FLUXO */
+.paciente.entrando {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.paciente.saindo {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* ATENDIMENTO (ALA MÉDICA) */
+#atendimento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.medico {
+  border: 2px dashed #9ca3af;
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 120px;
+}
+
+.medico h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.medico .paciente {
+  margin: 0;
+}
+
+
+  /* ALERTAS */
+
+#alertas {
+  background: #1f2933;
+  color: #ffffff;
+}
+
+#alertas h2 {
+  color: #ffffff;
+}
+
+#alertas ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#alertas li {
+  padding: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  font-size: 13px;
+}
