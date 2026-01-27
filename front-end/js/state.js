@@ -1,51 +1,86 @@
 class Paciente {
-    constructor(id, nome) {
-        this.id = id;
-        this.nome = nome; 
-        
-        this.estado = 'recepcao'; // estados: recepcao, consulta, pagamento, alta
 
-        this.gravidade = null; // leve, moderado, grave
-        
-        this.tempoChegada = Date.now();
-        this.tempoMaximoEspera = null; // em milissegundos
+  // Vocabulário oficial do sistema
+  static ESTADOS = {
+    RECEPCAO: 'recepcao',
+    CONSULTA: 'consulta',
+    PAGAMENTO: 'pagamento',
+    ALTA: 'alta'
+  }
 
-        this.historico = [
-            {
-                evento: 'chegada',
-                estado: this.estado,
-                timetamp: Date.now()
-            }
-        ];
-    }   
+  static GRAVIDADE = {
+    VERDE: 'verde',
+    AMARELO: 'amarelo',
+    VERMELHO: 'vermelho'
+  }
 
-    atualizarEstado(novoEstado) {
-        this.estado = novoEstado;
-        this.registrarEvento(`mudanca_estado: ${novoEstado}`);
+  constructor(id, nome) {
+    this.id = id
+    this.nome = nome
+
+    this.estado = Paciente.ESTADOS.RECEPCAO
+    this.gravidade = null
+
+    this.tempoChegada = Date.now()
+    this.tempoMaximoEspera = null
+
+    this.historico = [
+      {
+        evento: 'chegada',
+        estado: this.estado,
+        timestamp: Date.now()
+      }
+    ]
+  }
+
+  // Controle de transições válidas
+  podeMudarPara(novoEstado) {
+    const transicoesValidas = {
+      [Paciente.ESTADOS.RECEPCAO]: [Paciente.ESTADOS.CONSULTA],
+      [Paciente.ESTADOS.CONSULTA]: [Paciente.ESTADOS.PAGAMENTO],
+      [Paciente.ESTADOS.PAGAMENTO]: [Paciente.ESTADOS.ALTA],
+      [Paciente.ESTADOS.ALTA]: []
     }
 
-    definirGravidade(gravidade) {
-        this.gravidade = gravidade
+    return transicoesValidas[this.estado]?.includes(novoEstado)
+  }
 
-        if (gravidade === 'verde') this.tempoMaximoEspera = 30 * 60 * 1000; // 120 minutos
-        if (gravidade === 'amarelo') this.tempoMaximoEspera = 15 * 60 * 1000; // 60 minutos
-        if (gravidade === 'vermelho') this.tempoMaximoEspera = 5 * 60 * 1000; // 15 minutos
-        
-        this.registrarEvento(`gravidade: ${gravidade}`); 
+  atualizarEstado(novoEstado) {
+    if (!this.podeMudarPara(novoEstado)) {
+      this.registrarEvento(`transicao_invalida: ${this.estado} -> ${novoEstado}`)
+      return false
     }
 
-    registrarEvento(evento) {
-        this.historico.push({
-            evento, 
-            estado: this.estado,
-            timetamp: Date.now()
-        });
-    }
+    this.estado = novoEstado
+    this.registrarEvento(`mudanca_estado: ${novoEstado}`)
+    return true
+  }
 
-    tempoExcedido() {
-        if (!this.tempoMaximoEspera) return false;
-        return Date.now() - this.tempoChegada > this.tempoMaximoEspera;
+  definirGravidade(gravidade) {
+    this.gravidade = gravidade
+
+    if (gravidade === Paciente.GRAVIDADE.VERDE)
+      this.tempoMaximoEspera = 30 * 60 * 1000 // 30 min
+
+    if (gravidade === Paciente.GRAVIDADE.AMARELO)
+      this.tempoMaximoEspera = 15 * 60 * 1000 // 15 min
+
+    if (gravidade === Paciente.GRAVIDADE.VERMELHO)
+      this.tempoMaximoEspera = 5 * 60 * 1000 // 5 min
+
+    this.registrarEvento(`gravidade_definida: ${gravidade}`)
+  }
+
+  registrarEvento(evento) {
+    this.historico.push({
+      evento,
+      estado: this.estado,
+      timestamp: Date.now()
+    })
+  }
+
+  tempoExcedido() {
+    if (!this.tempoMaximoEspera) return false
+    return Date.now() - this.tempoChegada > this.tempoMaximoEspera
+  }
 }
-
-}
-

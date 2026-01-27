@@ -14,11 +14,11 @@ function gravidadeAleatoria() {
     }
 }
 
-document
+document    
   .getElementById('btn-novo-paciente')
   .addEventListener('click', () => {
 
-   const paciente = new Paciente(
+  const paciente = new Paciente(    
     contadorPacientes, `paciente ${contadorPacientes}`
    )
     
@@ -41,6 +41,5 @@ document
   hospital.verificarPacientesCriticos()
   renderPacientes(hospital)
   renderAlertas(hospital)
-}, 1000) 
-
+    }, 1000) 
 
