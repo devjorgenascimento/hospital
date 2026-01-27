@@ -2,6 +2,7 @@ class Hospital {
   constructor() {
     this.pacientes = []
     this.filaEspera = []
+
     this.medicos = [
       { id: 1, ocupado: false, pacienteId: null },
       { id: 2, ocupado: false, pacienteId: null }
@@ -11,7 +12,9 @@ class Hospital {
     this.alertas = []
   }
 
-  // registra eventos globais do hospital
+  // ===============================
+  // LOGS E ALERTAS
+  // ===============================
   registrarEvento(evento, dados = {}) {
     this.historico.push({
       evento,
@@ -28,41 +31,42 @@ class Hospital {
     })
   }
 
-  // chegada de paciente
+  // ===============================
+  // FLUXO DO PACIENTE
+  // ===============================
   admitirPaciente(paciente) {
     this.pacientes.push(paciente)
-    paciente.atualizarEstado('recepcao')
+
+    paciente.atualizarEstado(Paciente.ESTADOS.RECEPCAO)
 
     this.registrarEvento('paciente_admitido', {
       pacienteId: paciente.id
     })
   }
 
-  // envia paciente para triagem
-  enviarParaTriagem(paciente) {
-    paciente.atualizarEstado('triagem')
-    this.registrarEvento('triagem_iniciada', {
-      pacienteId: paciente.id
-    })
-  }
-
-  // finaliza triagem e envia para fila
-  finalizarTriagem(paciente, gravidade) {
+  // define gravidade e envia para fila de consulta
+  finalizarRecepcao(paciente, gravidade) {
     paciente.definirGravidade(gravidade)
-    paciente.atualizarEstado('espera')
+    paciente.atualizarEstado(Paciente.ESTADOS.CONSULTA)
 
     this.filaEspera.push(paciente)
     this.organizarFila()
 
-    this.registrarEvento('triagem_finalizada', {
+    this.registrarEvento('paciente_em_espera_consulta', {
       pacienteId: paciente.id,
       gravidade
     })
   }
 
-  // organiza fila por gravidade e tempo
+  // ===============================
+  // FILA
+  // ===============================
   organizarFila() {
-    const prioridade = { vermelho: 1, amarelo: 2, verde: 3 }
+    const prioridade = {
+      vermelho: 1,
+      amarelo: 2,
+      verde: 3
+    }
 
     this.filaEspera.sort((a, b) => {
       if (prioridade[a.gravidade] !== prioridade[b.gravidade]) {
@@ -72,7 +76,9 @@ class Hospital {
     })
   }
 
-  // tenta alocar pacientes aos médicos livres
+  // ===============================
+  // ATENDIMENTO MÉDICO
+  // ===============================
   alocarAtendimentos() {
     this.medicos.forEach(medico => {
       if (!medico.ocupado && this.filaEspera.length > 0) {
@@ -81,9 +87,9 @@ class Hospital {
         medico.ocupado = true
         medico.pacienteId = paciente.id
 
-        paciente.atualizarEstado('atendimento')
+        paciente.atualizarEstado(Paciente.ESTADOS.CONSULTA)
 
-        this.registrarEvento('atendimento_iniciado', {
+        this.registrarEvento('consulta_iniciada', {
           medicoId: medico.id,
           pacienteId: paciente.id
         })
@@ -91,7 +97,41 @@ class Hospital {
     })
   }
 
-  // verifica pacientes que passaram do tempo seguro
+  finalizarConsulta(medicoId) {
+    const medico = this.medicos.find(m => m.id === medicoId)
+    if (!medico || !medico.ocupado) return
+
+    const paciente = this.pacientes.find(p => p.id === medico.pacienteId)
+    if (!paciente) return
+
+    paciente.atualizarEstado(Paciente.ESTADOS.PAGAMENTO)
+
+    medico.ocupado = false
+    medico.pacienteId = null
+
+    this.registrarEvento('consulta_finalizada', {
+      medicoId,
+      pacienteId: paciente.id
+    })
+
+    // automaticamente tenta puxar outro paciente
+    this.alocarAtendimentos()
+  }
+
+  // ===============================
+  // SAÍDA DO SISTEMA
+  // ===============================
+  finalizarPagamento(paciente) {
+    paciente.atualizarEstado(Paciente.ESTADOS.ALTA)
+
+    this.registrarEvento('paciente_em_alta', {
+      pacienteId: paciente.id
+    })
+  }
+
+  // ===============================
+  // MONITORAMENTO
+  // ===============================
   verificarPacientesCriticos() {
     this.filaEspera.forEach(paciente => {
       if (paciente.tempoExcedido()) {
@@ -100,25 +140,6 @@ class Hospital {
           `Paciente ${paciente.nome} excedeu o tempo seguro`
         )
       }
-    })
-  }
-
-  // simula fim de atendimento
-  finalizarAtendimento(medicoId) {
-    const medico = this.medicos.find(m => m.id === medicoId)
-    if (!medico || !medico.ocupado) return
-
-    const paciente = this.pacientes.find(p => p.id === medico.pacienteId)
-    if (!paciente) return
-
-    paciente.atualizarEstado('finalizado')
-
-    medico.ocupado = false
-    medico.pacienteId = null
-
-    this.registrarEvento('atendimento_finalizado', {
-      medicoId,
-      pacienteId: paciente.id
     })
   }
 }
