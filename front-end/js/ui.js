@@ -1,15 +1,16 @@
  const areas = {
-    recepcao: document.querySelector('#recepcao .lista-pacientes'),
-    triagem: document.querySelector('#triagem .lista-pacientes'),
-    espera: document.querySelector('#espera .lista-pacientes')
- }
+  recepcao: document.querySelector('#recepcao .lista-pacientes'),
+  consulta: document.querySelector('#consulta .lista-pacientes'),
+  pagamento: document.querySelector('#pagamento .lista-pacientes'),
+  alta: document.querySelector('#alta .lista-pacientes')
+}
 
  const medicosUi ={
     1: document.querySelector('#medico-1 .lista-pacientes'),
     2: document.querySelector('#medico-2 .lista-pacientes'),
  }
  
- const listaAlertas = document.getElementById('#alertas-lista');
+ const listaAlertas = document.getElementById('alertas-lista');
 
 
 const estadoAnterior = new Map();
@@ -43,7 +44,6 @@ function criarElementoPaciente(paciente, estadoAntes) {
     }
     return div;
 }
-
 
 function renderPacientes(hospital) {
     if (!hospital || !hospital.pacientes) return;
@@ -79,7 +79,6 @@ function renderPacientes(hospital) {
 
 }
 
-
 function atualizarEstadoAnterior(hospital) {
     hospital.pacientes.forEach(p => {
         estadoAnterior.set(p.id, p.estado);
@@ -97,4 +96,3 @@ function renderAlertas(hospital) {
         listaAlertas.appendChild(li);
     })
 }
-
